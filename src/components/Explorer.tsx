@@ -3,6 +3,8 @@ import './Explorer.css';
 import Image from './Image';
 import ImageEdit from './ImageEdit';
 
+let lastSelectedImage = '';
+
 const Explorer = () => {
   const imageInit = [
     { path: 'images/_DSC4537.jpg', name: 'image 1', selected: false },
@@ -18,18 +20,39 @@ const Explorer = () => {
 
   const [images, setImages] = useState(imageInit);
 
-  const selectImage = (name: string) =>
-    setImages(
-      images.map((image) =>
-        name === image.name ? { ...image, selected: !image.selected } : image,
-      ),
-    );
+  const selectImage = (event: React.MouseEvent, name: string) => {
+    if (event.ctrlKey) {
+      setImages(
+        images.map((image) => ({
+          ...image,
+          selected: name === image.name ? !image.selected : image.selected,
+        })),
+      );
+    } else if (event.shiftKey && lastSelectedImage !== '') {
+      const selection1 = images.findIndex((image) => image.name === name);
+      const selection2 = images.findIndex((image) => image.name === lastSelectedImage);
+      if (selection1 >= 0 && selection2 >= 0) {
+        const startSelection = Math.min(selection1, selection2);
+        const endSelection = Math.max(selection1, selection2);
+        setImages(
+          images.map((image, index) => ({
+            ...image,
+            selected:
+              index >= startSelection && index <= endSelection ? true : image.selected,
+          })),
+        );
+      }
+    } else {
+      setImages(images.map((image) => ({ ...image, selected: name === image.name })));
+    }
+    lastSelectedImage = name;
+  };
 
   const selectAll = (select: boolean) =>
     setImages(images.map((image) => ({ ...image, selected: select })));
 
   const imagesRender = images.map((image) => (
-    <Image image={image} select={selectImage} />
+    <Image key={image.name} image={image} select={selectImage} />
   ));
 
   const selectedImages = images.filter((image) => image.selected);

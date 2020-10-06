@@ -3,13 +3,16 @@ import './Image.css';
 
 type ImageProps = {
   image: { path: string; name: string; selected: boolean };
-  select: (name: string) => void;
+  select: (event: React.MouseEvent, name: string) => void;
 };
 
 const Image = ({ image, select }: ImageProps) => {
   const selectedClass = image.selected ? ' image-selected' : '';
   return (
-    <div className={'Image' + selectedClass} onClick={() => select(image.name)}>
+    <div
+      className={'Image' + selectedClass}
+      onClick={(event) => select(event, image.name)}
+    >
       <img src={image.path} />
       <div>{image.name}</div>
     </div>
