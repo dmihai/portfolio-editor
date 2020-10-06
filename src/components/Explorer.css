@@ -1,0 +1,17 @@
+.Images {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.Panel {
+  display: flex;
+}
+
+.Editor {
+  width: 200px;
+}
+
+.link {
+  cursor: pointer;
+}
