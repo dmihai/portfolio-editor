@@ -28,6 +28,7 @@ const Explorer = () => {
           selected: name === image.name ? !image.selected : image.selected,
         })),
       );
+      lastSelectedImage = name;
     } else if (event.shiftKey && lastSelectedImage !== '') {
       const selection1 = images.findIndex((image) => image.name === name);
       const selection2 = images.findIndex((image) => image.name === lastSelectedImage);
@@ -37,15 +38,14 @@ const Explorer = () => {
         setImages(
           images.map((image, index) => ({
             ...image,
-            selected:
-              index >= startSelection && index <= endSelection ? true : image.selected,
+            selected: index >= startSelection && index <= endSelection,
           })),
         );
       }
     } else {
       setImages(images.map((image) => ({ ...image, selected: name === image.name })));
+      lastSelectedImage = name;
     }
-    lastSelectedImage = name;
   };
 
   const selectAll = (select: boolean) =>
