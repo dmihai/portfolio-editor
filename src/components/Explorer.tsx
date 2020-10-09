@@ -2,36 +2,59 @@ import React, { useState } from 'react';
 import './Explorer.css';
 import Image from './Image';
 import ImageEdit from './ImageEdit';
+import update from 'immutability-helper';
 
 let lastSelectedImage = '';
 
-const Explorer = () => {
-  const imageInit = [
-    { path: 'images/_DSC4537.jpg', name: 'image 1', selected: false },
-    { path: 'images/_DSC4656.jpg', name: 'image 2', selected: false },
-    { path: 'images/_DSC4666.jpg', name: 'image 3', selected: true },
-    { path: 'images/_DSC4671.jpg', name: 'image 4', selected: false },
-    { path: 'images/_DSC4680.jpg', name: 'image 5', selected: false },
-    { path: 'images/_DSC4685.jpg', name: 'image 6', selected: true },
-    { path: 'images/_DSC4686.jpg', name: 'image 7', selected: false },
-    { path: 'images/_DSC4689.jpg', name: 'image 8', selected: false },
-    { path: 'images/_DSC4691.jpg', name: 'image 9', selected: false },
-  ];
+const imageInit = [
+  { id: 'p01', path: 'images/DSC_09917.jpg', name: 'image 1', selected: false },
+  { id: 'p02', path: 'images/DSC_09922.jpg', name: 'image 2', selected: false },
+  { id: 'p03', path: 'images/DSC_09959.jpg', name: 'image 3', selected: true },
+  { id: 'p04', path: 'images/DSC_09967.jpg', name: 'image 4', selected: false },
+  { id: 'p05', path: 'images/DSC_10012.jpg', name: 'image 5', selected: false },
+  { id: 'p06', path: 'images/DSC_10058.jpg', name: 'image 6', selected: true },
+  { id: 'p07', path: 'images/DSC_10073.jpg', name: 'image 7', selected: false },
+  { id: 'p08', path: 'images/DSC_10076.jpg', name: 'image 8', selected: false },
+  { id: 'p09', path: 'images/DSC_10096.jpg', name: 'image 9', selected: false },
+];
 
+const Explorer = () => {
   const [images, setImages] = useState(imageInit);
 
-  const selectImage = (event: React.MouseEvent, name: string) => {
+  const moveImage = (id: string, atIndex: number) => {
+    const { image, index } = findImage(id);
+    if (image) {
+    setImages(
+      update(images, {
+        $splice: [
+          [index, 1],
+          [atIndex, 0, image],
+        ],
+      }),
+    )
+    }
+  }
+
+  const findImage = (id: string) => {
+    const index = images.findIndex(image => image.id===id);
+    return {
+      image: images[index],
+      index,
+    }
+  }
+
+  const selectImage = (event: React.MouseEvent, id: string) => {
     if (event.ctrlKey) {
       setImages(
         images.map((image) => ({
           ...image,
-          selected: name === image.name ? !image.selected : image.selected,
+          selected: id === image.id ? !image.selected : image.selected,
         })),
       );
-      lastSelectedImage = name;
+      lastSelectedImage = id;
     } else if (event.shiftKey && lastSelectedImage !== '') {
-      const selection1 = images.findIndex((image) => image.name === name);
-      const selection2 = images.findIndex((image) => image.name === lastSelectedImage);
+      const selection1 = images.findIndex((image) => image.id === id);
+      const selection2 = images.findIndex((image) => image.id === lastSelectedImage);
       if (selection1 >= 0 && selection2 >= 0) {
         const startSelection = Math.min(selection1, selection2);
         const endSelection = Math.max(selection1, selection2);
@@ -43,8 +66,8 @@ const Explorer = () => {
         );
       }
     } else {
-      setImages(images.map((image) => ({ ...image, selected: name === image.name })));
-      lastSelectedImage = name;
+      setImages(images.map((image) => ({ ...image, selected: id === image.id })));
+      lastSelectedImage = id;
     }
   };
 
@@ -52,7 +75,7 @@ const Explorer = () => {
     setImages(images.map((image) => ({ ...image, selected: select })));
 
   const imagesRender = images.map((image) => (
-    <Image key={image.name} image={image} select={selectImage} />
+    <Image key={image.id} image={image} selectImage={selectImage} findImage={findImage} moveImage={moveImage} />
   ));
 
   const selectedImages = images.filter((image) => image.selected);
