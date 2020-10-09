@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDrag, useDrop } from 'react-dnd';
-import { dragItems } from '../constants/dragItems';
-import { IImage } from '../constants/interfaces';
+import { dragItems } from '../types/items';
+import { IImage } from '../types/interfaces';
 import './Image.css';
 
 type ImageProps = {
@@ -14,17 +14,18 @@ type ImageProps = {
 interface Item {
   type: string;
   id: string;
-  originalIndex: string;
+  originalIndex: number;
 }
 
 const Image = ({ image, selectImage, findImage, moveImage }: ImageProps) => {
   const originalIndex = findImage(image.id).index;
+
   const [{ isDragging }, drag] = useDrag({
     item: { type: dragItems.IMAGE, id: image.id, originalIndex },
     collect: monitor => ({
       isDragging: monitor.isDragging(),
     }),
-    end: (dropResult, monitor) => {
+    end: (_dropResult, monitor) => {
       const { id: droppedId, originalIndex } = monitor.getItem();
       const didDrop = monitor.didDrop();
       if (!didDrop) {
