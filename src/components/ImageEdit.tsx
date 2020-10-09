@@ -6,7 +6,9 @@ type ImageEditProps = {
 };
 
 const ImageEdit = ({ images }: ImageEditProps) => {
-  const imagesRender = images.map((image) => <div key={image.id}>{image.name}</div>);
+  const imagesRender = images.map(image => (
+    <div key={image.id}>{image.name}</div>
+  ));
   return <div>{imagesRender}</div>;
 };
 
